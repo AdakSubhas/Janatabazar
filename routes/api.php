@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApiController\CustomerAPI\LoginControllerAPI as CLCAPI;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +16,4 @@ use App\Http\Controllers\ApiController\CustomerAPI\LoginControllerAPI as CLCAPI;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
-
-Route::controller(CLCAPI::class)->group(function () {
-    Route::get('product-categories', 'product_categories');
 });
