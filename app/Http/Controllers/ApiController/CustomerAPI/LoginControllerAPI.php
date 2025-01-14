@@ -14,6 +14,8 @@ use Carbon\Carbon;
 
 class LoginControllerAPI extends Controller
 {
+    //hello
+    //test
     public function CustomerRegistration(Request $req){
         try {
             $req->validate([
