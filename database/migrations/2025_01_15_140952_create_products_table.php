@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->integer('category_id');
-            $table->string('item ')->unique();
+            $table->string('item',255)->unique();
             $table->double('price',8,2);
             $table->string('units',255);
             $table->integer('min_order')->comment('Quantity');

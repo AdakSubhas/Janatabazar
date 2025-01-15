@@ -154,7 +154,7 @@ header('Retry-After: 30');
 <script>
 
     const countDown = () => {
-        const countDay = new Date("08/07/2024"); // please indicate launch date (mm/dd/YYYY) :)
+        const countDay = new Date("02/28/2025"); // please indicate launch date (mm/dd/YYYY) :)
         const now = new Date();
         const counter = countDay - now;
         const second = 1000;
