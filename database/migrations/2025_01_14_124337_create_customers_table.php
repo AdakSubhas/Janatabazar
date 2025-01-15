@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('password',255)->nullable();
             $table->string('mobile',255)->unique()->nullable();
             $table->string('email',255)->unique()->nullable();
-            $table->string('address',255)->nullable();
+            $table->longText('address',255)->nullable();
             $table->string('city',255)->nullable();
             $table->string('state',255)->nullable();
             $table->string('zipcode',255)->nullable();
