@@ -21,8 +21,8 @@ return new class extends Migration
             $table->longText('address',255);
             $table->string('deliver_area',255)->nullable();
             $table->string('zipcode',255)->nullable();
-            $table->enum('active_stats',['0','1'])->comment('1="Online",0="Offline"')->default('0');
-            $table->enum('status',['0','1'])->comment('1="Active",0="Inactive"')->default('0');
+            $table->enum('active_stats',[0,1])->comment('1="Online",0="Offline"')->default(0);
+            $table->enum('status',[0,1])->comment('1="Active",0="Inactive"')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
         });

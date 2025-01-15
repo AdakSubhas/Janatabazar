@@ -16,10 +16,12 @@ return new class extends Migration
             $table->integer('category_id');
             $table->string('item',255)->unique();
             $table->double('price',8,2);
+            $table->string('photo',255)->nullable();
             $table->string('units',255);
             $table->integer('min_order')->comment('Quantity');
             $table->integer('max_order')->comment('Quantity');
-            $table->enum('status',['0','1'])->comment('1="Active",0="Inactive"')->default('0');
+            $table->LongText('description')->nullable();
+            $table->enum('status',[0,1])->comment('1="Active",0="Inactive"')->default(0);
             $table->integer('update_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));

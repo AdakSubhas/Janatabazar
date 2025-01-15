@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
             $table->string('category_name',255)->unique();
-            $table->enum('status',['0','1'])->comment('1="Active",0="Inactive"')->default('0');
+            $table->enum('status',[0,1])->comment('1="Active",0="Inactive"')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
         });

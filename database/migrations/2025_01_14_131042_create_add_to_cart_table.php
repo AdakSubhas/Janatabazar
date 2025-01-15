@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('product_id');
             $table->integer('customer_id');
             $table->integer('quantity');
-            $table->enum('status',['0','1'])->comment('1="Order",0="panding"')->default('0');
+            $table->enum('status',[0,1])->comment('1="Order",0="panding"')->default(0);
             $table->integer('deleted_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
