@@ -20,5 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(CLCAPI::class)->group(function () {
-    Route::get('product-categories', 'product_categories');
+    Route::post('Customer-Registration', 'CustomerRegistration');
+    Route::post('Customer-Login', 'CustomerLogin');
 });
