@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('city',255)->nullable();
             $table->string('state',255)->nullable();
             $table->string('zipcode',255)->nullable();
-            $table->enum('status',[0,1])->comment('1="Active",0="Inactive"')->default(0);
+            $table->tinyInteger('status')->comment('1="Active",0="Inactive"')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
         });

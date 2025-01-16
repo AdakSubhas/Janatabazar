@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController\CustomerAPI\LoginControllerAPI as CLCAPI;
+use App\Http\Controllers\ApiController\CustomerAPI\ProductControllerAPI as CPCAPI;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,5 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(CLCAPI::class)->group(function () {
     Route::post('Customer-Registration', 'CustomerRegistration');
     Route::post('Customer-Login', 'CustomerLogin');
+});
+Route::controller(CPCAPI::class)->group(function () {
     Route::get('Product-List', 'ProductList');
+    Route::get('Product-Categories', 'ProductCategories');
 });

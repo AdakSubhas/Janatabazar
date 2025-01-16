@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('min_order')->comment('Quantity');
             $table->integer('max_order')->comment('Quantity');
             $table->LongText('description')->nullable();
-            $table->enum('status',[0,1])->comment('1="Active",0="Inactive"')->default(0);
+            $table->tinyInteger('status')->comment('1="Active",0="Inactive"')->default(1);
             $table->integer('update_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
