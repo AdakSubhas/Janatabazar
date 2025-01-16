@@ -129,34 +129,41 @@ class LoginControllerAPI extends Controller
                     ->where('username',$username)
                     ->first();
             if($find){
-                if(Hash::check($pass,$find->password)){
-                    $data   = [
-                                'Id'        => $find->id,
-                                'Name'      => $find->name,
-                                'UserName'  => $find->username,
-                                'Photo'     => env('APP_URL').'storage/Customer/'.$find->photo,
-                                'Email'     => $find->email,
-                                'Mobile'    => $find->mobile,
-                                'Address'   => $find->address,
-                                'City'      => $find->city,
-                                'State'     => $find->state,
-                                'zipcode'   => $find->zipcode,
-                                'Status'    => $find->status,
-                            ];
-                    $output['response'] = 'success';
-                    $output['message'] = 'User Login Successful';
-                    $output['data'] = $data;
-                    $output['error'] = null;
+                if($find->status == 1){
+                    if(Hash::check($pass,$find->password)){
+                        $data   = [
+                                    'Id'        => $find->id,
+                                    'Name'      => $find->name,
+                                    'UserName'  => $find->username,
+                                    'Photo'     => env('APP_URL').'storage/Customer/'.$find->photo,
+                                    'Email'     => $find->email,
+                                    'Mobile'    => $find->mobile,
+                                    'Address'   => $find->address,
+                                    'City'      => $find->city,
+                                    'State'     => $find->state,
+                                    'zipcode'   => $find->zipcode,
+                                    'Status'    => $find->status,
+                                ];
+                        $output['response'] = 'success';
+                        $output['message'] = 'User Login Successful';
+                        $output['data'] = $data;
+                        $output['error'] = null;
+                    }
+                    else{
+                        $output['response'] = 'failed';
+                        $output['message']  = 'Password not match';
+                        $output['error']    = null;
+                    }
                 }
                 else{
                     $output['response'] = 'failed';
-                    $output['message']  = 'Password not match';
-                    $output['error']    = null;
+                        $output['message']  = 'Password not match';
+                        $output['error']    = null;
                 }
             }
             else{
                 $output['response'] = 'failed';
-                $output['message']  = 'Invlide Username';
+                $output['message']  = 'User account is inactive';
                 $output['error']    = null;
             }
         }

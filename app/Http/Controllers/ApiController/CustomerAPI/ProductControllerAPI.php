@@ -36,7 +36,7 @@ class ProductControllerAPI extends Controller
 
             $output = [
                 'response' => 'failed',
-                'message'  => 'An error occurred while fetching product data',
+                'message'  => 'An error occurred while fetching product category data',
                 'error'    => $e->getMessage(),
             ];
         }
