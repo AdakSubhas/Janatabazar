@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('order_id',255);
             $table->integer('cusromer_id');
+            $table->string('address_id',255)->comment('Customer Address');
             $table->integer('store_id');
             $table->integer('delivery_id');
             $table->tinyInteger('status')->default(0)->nullable();
-            $table->integer('otp1')->nullable();
-            $table->integer('otp2')->nullable();
+            $table->integer('otp1')->comment('for store & delivey')->nullable();
+            $table->integer('otp2')->comment('for customer & delivery')->nullable();
             $table->double('price', 8, 2)->nullable();
             $table->double('discount', 8, 2)->nullable();
             $table->double('total', 8, 2)->nullable();

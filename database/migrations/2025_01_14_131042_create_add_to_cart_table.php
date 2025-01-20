@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('customer_id');
             $table->integer('quantity');
             $table->tinyInteger('status')->comment('2="On Going",1="Order Complete",0="panding"')->default(0);
+            $table->string('delete_by_table',255)->comment('delivery,store')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
