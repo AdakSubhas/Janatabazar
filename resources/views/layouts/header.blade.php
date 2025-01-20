@@ -58,7 +58,7 @@
             <div class="navbar-header">
                 <ul class="nav navbar-nav flex-row">
                     <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
-                    <li class="nav-item"><a class="navbar-brand" href="index.html"><img class="brand-logo" alt="modern admin logo" src="../../../app-assets/images/logo/logo.png">
+                    <li class="nav-item"><a class="navbar-brand" href="{{url('/')}}"><img class="brand-logo" alt="modern admin logo" src="../../../app-assets/images/logo/logo.png">
                             <h3 class="brand-text">Janata Bazar</h3>
                         </a></li>
                     <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="la la-ellipsis-v"></i></a></li>
@@ -249,55 +249,65 @@
     <div class="main-menu menu-fixed menu-light menu-accordion    menu-shadow " data-scroll-to-active="true">
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                <li class=" nav-item"><a href="index.html"><i class="la la-home"></i><span class="menu-title" data-i18n="Dashboard">Dashboard</span><span class="badge badge badge-info badge-pill float-right mr-2">3</span></a>
+                <li class=" nav-item"><a href="{{url('/')}}"><i class="la la-home"></i><span class="menu-title" data-i18n="Dashboard">Dashboard</span><span class="badge badge badge-info badge-pill float-right mr-2">3</span></a>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Users</span></a>
                     <ul class="menu-content">
                         <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Users List</span></a>
                         </li>
-                        <li><a class="menu-item" href="page-users-view.html"><i></i><span data-i18n="Users View">Users View</span></a>
-                        </li>
-                        <li><a class="menu-item" href="page-users-edit.html"><i></i><span data-i18n="Users Edit">Users Edit</span></a>
-                        </li>
-                        <li><a class="menu-item" href="user-profile.html"><i></i><span data-i18n="Users Profile">Users Profile</span></a>
-                        </li>
-                        <li><a class="menu-item" href="user-cards.html"><i></i><span data-i18n="Users Cards">Users Cards</span></a>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users View">Add User</span></a>
                         </li>
                     </ul>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Category And Itmes</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Category</span></a>
+                        <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Category</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Add Category</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Add Category items</span></a>
                         </li>
                     </ul>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Store</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        <li><a class="menu-item" href="{{route('store-list')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Add New Store</span></a>
                         </li>
                     </ul>
                 </li>
-                <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Delivery Boy</span></a>
+                <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Delivery Partner</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        <li><a class="menu-item" href="{{route('delivery-partner-list')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Add Delivery Partner</span></a>
                         </li>
                     </ul>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Daily Price</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Daily Price Upload</span></a>
                         </li>
                     </ul>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Reports</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Item Wise</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Date Wise</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Per Day Wise</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Customer Wise Per Day</span></a>
                         </li>
                     </ul>
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Delivery Contact</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">List</span></a>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Contact List</span></a>
+                        </li>
+                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Add Contact</span></a>
                         </li>
                     </ul>
                 </li>

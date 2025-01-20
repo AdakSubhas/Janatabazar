@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\DeliveryPartnerController;
 
 
 /*
@@ -26,5 +29,28 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::get('/users',[UserController::class,'index'])->name('users');
-Route::get('/api/get-products', [UserController::class, 'getProducts']);
+
+Route::controller(UserController::class)->group(function () {
+
+    Route::get('/users','index')->name('users');
+    
+});
+
+Route::controller(ProductController::class)->group(function () {
+
+    Route::get('/category','category')->name('category');
+    
+});
+
+Route::controller(StoreController::class)->group(function () {
+
+    Route::get('/store-list','storeList')->name('store-list');
+    
+});
+
+Route::controller(DeliveryPartnerController::class)->group(function () {
+
+    Route::get('/delivery-partner-list','DeliveryPartnerList')->name('delivery-partner-list');
+    
+});
+

@@ -5,13 +5,13 @@
         <div class="content-wrapper">
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2">
-                    <h3 class="content-header-title">Users </h3>
+                    <h3 class="content-header-title">Categories </h3>
                     <div class="row breadcrumbs-top">
                         <div class="breadcrumb-wrapper col-12">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="index.html">Home</a>
                                 </li>
-                                <li class="breadcrumb-item active">Users
+                                <li class="breadcrumb-item active">Categories
                                 </li>
                             </ol>
                         </div>
@@ -46,38 +46,26 @@
                                         <table class="table table-striped table-bordered file-export">
                                             <thead>
                                                 <tr>
+                                                    <th>SL No</th>
                                                     <th>Name</th>
-                                                    <th>Type</th>
-                                                    <th>Mobile</th>
-                                                    <th>Email</th>
-                                                    <th>Address</th>
                                                     <th>Status</th>
+                                                    <th>Items</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($data as $value)
                                                 <tr>
-                                                    <td>{{$value->name}}</td>
-                                                    <td>{{$value->type}}</td>
-                                                    <td>{{$value->mobile}}</td>
-                                                    <td>{{$value->email}}</td>
-                                                    <td>{{$value->address}}</td>
-                                                    @if($value->status == 1)
+                                                    <td>1</td>
+                                                    <td>Fruits</td>
                                                     <td>Active</td>
-                                                    @else
-                                                    <td>Inactive</td>
-                                                    @endif
+                                                    <td>View</td>
                                                 </tr>
-                                                @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr>
+                                                    <th>SL No</th>
                                                     <th>Name</th>
-                                                    <th>Type</th>
-                                                    <th>Mobile</th>
-                                                    <th>Email</th>
-                                                    <th>Address</th>
                                                     <th>Status</th>
+                                                    <th>Items</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
