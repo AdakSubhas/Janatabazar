@@ -443,5 +443,26 @@ class LoginControllerAPI extends Controller
         }
         return response()->json($output);
     }
+    public function CustomerProfileEdit(Request $req){
+        try{
+            $req->validate([
+                'id' => 'required',
+                'name' => 'required',
+                'phone' => 'required',
+            ]);
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Customer profile update request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing customer profile edit request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
 
 }

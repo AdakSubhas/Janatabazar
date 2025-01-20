@@ -20,9 +20,13 @@ class ProductControllerAPI extends Controller
                     ->where('status',1)->get();
             
             foreach($fetch as $val){
+                $photo = $val->icon
+                        ? env('APP_URL') . 'storage/CategoriesIcon/' . $product->photo
+                        : env('APP_URL') . 'storage/CategoriesIcon/default.jpg';
                 $data[] = [
                             'Id'    => $val->id,
                             'Name'  => $val->category_name,
+                            'Icon'  => $photo,
                         ];
             }
             $output['response'] = 'success';
