@@ -20,15 +20,11 @@ class LoginControllerAPI extends Controller
                     'name'          => 'required',
                     'password'      => 'required',
                     'ConfPassword'  => 'required',
-                    'email'         => 'required|unique:customers,email',
+                    // 'email'         => 'required|unique:customers,email',
                     'mobile'        => 'required|unique:customers,mobile|digits:10',
-                    'address'       => 'required',
-                    'city'          => 'required',
-                    'state'         => 'required',
-                    'zipcode'       => 'required',
                 ],
                 [
-                    'email.unique'      => 'This email id is already registered with us. Please use a different email id.',
+                    // 'email.unique'      => 'This email id is already registered with us. Please use a different email id.',
                     'mobile.unique'     => 'This mobile number is already registered with us. Please use a different mobile number.',
                     'mobile.digits'     => 'The mobile number Must be 10 digits.'
                 ]);
@@ -39,10 +35,6 @@ class LoginControllerAPI extends Controller
             $CPassword  = $req->ConfPassword;
             $email      = $req->email;
             $mobile     = $req->mobile;
-            $address    = $req->address;
-            $city       = $req->city;
-            $state      = $req->state;
-            $zipcode    = $req->zipcode;
             $created_at = Carbon::now();
 
             if ($photo = $req->file('photo')){
@@ -62,30 +54,47 @@ class LoginControllerAPI extends Controller
                                 'photo'     => $photo,
                                 'email'     => $email,
                                 'mobile'    => $mobile,
-                                'address'   => $address,
-                                'city'      => $city,
-                                'state'     => $state,
-                                'zipcode'   => $zipcode,
                                 'status'    => 1,
                                 'created_at'=> $created_at
                             ]);
                 if($insert){
-                    $data   = DB::table('customers')
-                            ->where('id',$insert)
-                            ->select(
-                                'id as user_id',
-                                'username as UserName',
-                                DB::raw("CONCAT('" . env('APP_URL') . "storage/Customer/', photo) as ProfilePhoto"),
-                                'name as Name',
-                                'mobile as Mobile',
-                                'email as Email',
-                                'address as Address',
-                                'city as City',
-                                'zipcode as ZipCode',
-                                'status as Status'
-                            )
-                            ->get();
-                    
+                    $check  = DB::table('customer_address')
+                            ->where([
+                                'customer_id'   => $insert,
+                                'status'        => 1,
+                            ])
+                            ->count();
+                    if($check > 0){
+                        $data   = DB::table('customers as cu')
+                                ->join('customer_address as ca','ca.customer_id','cu.id')
+                                ->where('cu.id',$insert)
+                                ->where('ca.status',1)
+                                ->select(
+                                    'cu.id as user_id',
+                                    DB::raw("CONCAT('" . env('APP_URL') . "storage/Customer/', cu.photo) as ProfilePhoto"),
+                                    'cu.name as Name',
+                                    'cu.mobile as Mobile',
+                                    'cu.email as Email',
+                                    'ca.address as Address',
+                                    'ca.city as City',
+                                    'ca.zipcode as ZipCode',
+                                    'ca.status as Status'
+                                )
+                                ->get();
+                    }
+                    else{
+                        $data   = DB::table('customers')
+                                ->where('id',$insert)
+                                ->select(
+                                    'id as user_id',
+                                    DB::raw("CONCAT('" . env('APP_URL') . "storage/Customer/', photo) as ProfilePhoto"),
+                                    'name as Name',
+                                    'mobile as Mobile',
+                                    'email as Email',
+                                    'status as Status'
+                                )
+                                ->get();
+                    }
                     $output['response'] = 'success';
                     $output['message']  = 'User registered successfully';
                     $output['data']     = $data;
@@ -126,37 +135,51 @@ class LoginControllerAPI extends Controller
             $pass       = $req->Password;
 
             $find   = DB::table('customers')
-                    ->where('username',$username)
+                    ->where('mobile',$username)
+                    ->orWhere('email',$username)
                     ->first();
             if($find){
-                if(Hash::check($pass,$find->password)){
-                    $data   = [
-                                'Id'        => $find->id,
-                                'Name'      => $find->name,
-                                'UserName'  => $find->username,
-                                'Photo'     => env('APP_URL').'storage/Customer/'.$find->photo,
-                                'Email'     => $find->email,
-                                'Mobile'    => $find->mobile,
-                                'Address'   => $find->address,
-                                'City'      => $find->city,
-                                'State'     => $find->state,
-                                'zipcode'   => $find->zipcode,
-                                'Status'    => $find->status,
-                            ];
-                    $output['response'] = 'success';
-                    $output['message'] = 'User Login Successful';
-                    $output['data'] = $data;
-                    $output['error'] = null;
+                if($find->status == 1){
+                    if(Hash::check($pass,$find->password)){
+                        $find1  = DB::table('customer_address')
+                                ->where([
+                                    'customer_id'   => $find->id,
+                                    'status'        => 1,
+                                ])
+                                ->first();
+                        $data   = [
+                                    'Id'        => $find->id,
+                                    'Name'      => $find->name,
+                                    'UserName'  => $find->username,
+                                    'Photo'     => env('APP_URL').'storage/Customer/'.$find->photo ?? NULL,
+                                    'Email'     => $find->email ?? NULL,
+                                    'Mobile'    => $find->mobile,
+                                    'Address'   => $find1->address ?? NULL,
+                                    'City'      => $find1->city ?? NULL,
+                                    'State'     => $find1->state ?? NULL,
+                                    'zipcode'   => $find1->zipcode ?? NULL,
+                                    'Status'    => $find->status,
+                                ];
+                        $output['response'] = 'success';
+                        $output['message'] = 'User Login Successful';
+                        $output['data'] = $data;
+                        $output['error'] = null;
+                    }
+                    else{
+                        $output['response'] = 'failed';
+                        $output['message']  = 'Password not match';
+                        $output['error']    = null;
+                    }
                 }
                 else{
                     $output['response'] = 'failed';
-                    $output['message']  = 'Password not match';
-                    $output['error']    = null;
+                        $output['message']  = 'Password not match';
+                        $output['error']    = null;
                 }
             }
             else{
                 $output['response'] = 'failed';
-                $output['message']  = 'Invlide Username';
+                $output['message']  = 'User account is inactive';
                 $output['error']    = null;
             }
         }
@@ -167,6 +190,274 @@ class LoginControllerAPI extends Controller
             $output = [
                 'response' => 'failed',
                 'message1' => 'An error occurred while processing the registration request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerAddressAdd(Request $req){
+        try{
+            $req->validate([
+                'CustomerId'    => 'required',
+                'Address'       => 'required',
+                'State'         => 'required',
+                'City'          => 'required',
+                'ZipCode'       => 'required',
+            ]);
+            $id         = $req->input('CustomerId');
+            $address    = $req->input('Address');
+            $state      = $req->input('State');
+            $city       = $req->input('City');
+            $zipcode    = $req->input('ZipCode');
+            $status     = 0;
+
+            $check      = DB::table('customer_address')
+                        ->where([
+                            'customer_id'   => $id,
+                            'deleted_at'    => NULL,
+                        ])
+                        ->count();
+            if($check<5){
+                $insert_data    = [
+                                'customer_id'   => $id,
+                                'address'       => $address,
+                                'city'          => $state,
+                                'state'         => $city,
+                                'zipcode'       => $zipcode,
+                                'status'        => $status,
+                                'created_at'    => now()
+                            ];
+
+                $insert = DB::table('customer_address')
+                        ->insertGetId($insert_data);
+                if($insert){
+                    $output['response'] = 'success';
+                    $output['message']  = 'Address add successfull';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'failed';
+                    $output['message']  = 'Address add failed. Please try again';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'Can not add more address';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Address ad request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing address add request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerAddressEdit(Request $req){
+        try{
+            $req->validate([
+                'AddressId'     => 'required',
+                'CustomerId'    => 'required',
+                'Address'       => 'required',
+                'State'         => 'required',
+                'City'          => 'required',
+                'ZipCode'       => 'required',
+            ]);
+
+            $id         = $req->input('AddressId');
+            $address    = $req->input('Address');
+            $state      = $req->input('State');
+            $city       = $req->input('City');
+            $zipcode    = $req->input('ZipCode');
+            $status     = 0;
+            $update_data    = [
+                'address'       => $address,
+                'city'          => $state,
+                'state'         => $city,
+                'zipcode'       => $zipcode,
+                'status'        => $status,
+                'updated_at'    => now()
+            ];
+
+            $update = DB::table('customer_address')
+                    ->where('id',$id)
+                    ->Update($update_data);
+            if($update){
+                $output['response'] = 'success';
+                $output['message']  = 'Address update successfull';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'Address update failed. Please try again';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Address update request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing address update request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerAddressDelete(Request $req){
+        try{
+            $req->validate([
+                'AddressId' => 'required|integer',
+            ]);
+            $id = $req->input('AddressId');
+            $check  = DB::table('customer_address')
+                    ->where([
+                        'id'        => $id,
+                        'deleted_at'=> NULL,
+                    ])
+                    ->count();
+            if($check>0){
+                $delete = DB::table('customer_address')
+                        ->where('id',$id)
+                        ->update([
+                            'status'        => 0,
+                            'deleted_at'    => now(),
+                        ]);
+                if($delete){
+                    $output['response'] = 'success';
+                    $output['message']  = 'Address delete Successful';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'failed';
+                    $output['message']  = 'Address delete failed';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'success';
+                $output['message']  = 'No data found to delete';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Address delete request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing Address delete request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerAddressList(Request $req){
+        try{
+            $req->validate([
+                'CustomerId' => 'required',
+            ]);
+            $id     = $req->input('CustomerId');
+            $check  = DB::table('customers')
+                    ->where('status',1)
+                    ->count();
+            if($check > 0){
+                $fetch  = DB::table('customer_address')
+                        ->where([
+                            'customer_id'   => $id,
+                            'deleted_at'    => NULL,
+                        ])
+                        ->select(
+                            'id',
+                            'customer_id',
+                            'address',
+                            'city',
+                            'state',
+                            'zipcode',
+                            'status'
+                        )
+                        ->get();
+                if($fetch->isNotEmpty()){
+                    $data   = [];
+
+                    foreach($fetch as $val){
+                        $data[] = [
+                                    'AddressId' => $val->id,
+                                    'CustomerId'=> $val->customer_id,
+                                    'Address'   => $val->address,
+                                    'City'      => $val->city,
+                                    'State'     => $val->state,
+                                    'Zipcode'   => $val->zipcode,
+                                    'Status'    => $val->status,
+                                ];
+                    }
+
+                    $output['response'] = 'success';
+                    $output['message']  = 'Data retrieved successfull';
+                    $output['data']     = $data;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'success';
+                    $output['message']  = 'No data found';
+                    $output['data']     = [];
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'User Not Active';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Address list request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing address list request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerProfileEdit(Request $req){
+        try{
+            $req->validate([
+                'id' => 'required',
+                'name' => 'required',
+                'phone' => 'required',
+            ]);
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Customer profile update request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing customer profile edit request',
                 'message'  => $e->getMessage(),
                 'error'    => $e->getMessage()
             ];
