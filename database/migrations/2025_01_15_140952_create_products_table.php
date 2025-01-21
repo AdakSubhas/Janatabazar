@@ -17,12 +17,8 @@ return new class extends Migration
             $table->integer('category_id');
             $table->string('serial_number',255)->unique();
             $table->string('item',255)->unique();
-            $table->double('price',8,2);
             $table->string('photo',255)->nullable();
             $table->string('units',255);
-            $table->string('state',255)->nullable();
-            $table->string('district',255)->nullable();
-            $table->string('city',255)->nullable();
             $table->integer('min_order')->comment('Quantity');
             $table->integer('max_order')->comment('Quantity');
             $table->LongText('description')->nullable();
