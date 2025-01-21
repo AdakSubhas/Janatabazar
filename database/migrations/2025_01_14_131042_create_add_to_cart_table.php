@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('add_to_cart', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id')->nullable();
+            $table->integer('daily_price_id');
             $table->integer('product_id');
             $table->integer('customer_id');
             $table->integer('quantity');

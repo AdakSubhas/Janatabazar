@@ -30,7 +30,7 @@ Route::controller(CLCAPI::class)->group(function () {
     Route::post('Customer-Address-List', 'CustomerAddressList');
 });
 Route::controller(CPCAPI::class)->group(function () {
-    Route::get('Product-List', 'ProductList');
+    Route::post('Product-List', 'ProductList');
     Route::get('Product-Categories', 'ProductCategories');
 });
 Route::controller(CATCCAPI::class)->group(function () {

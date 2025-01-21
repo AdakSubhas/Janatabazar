@@ -18,6 +18,7 @@ class add_to_cart extends Seeder
         DB::table('add_to_cart')->insert([
             [
                 'order_id'      => NULL,
+                'daily_price_id'=> 1,
                 'product_id'    => 1,
                 'customer_id'   => 1,
                 'quantity'      => 2,
@@ -26,6 +27,7 @@ class add_to_cart extends Seeder
             ],
             [
                 'order_id'      => NULL,
+                'daily_price_id'=> 2,
                 'product_id'    => 2,
                 'customer_id'   => 1,
                 'quantity'      => 3,
@@ -34,6 +36,7 @@ class add_to_cart extends Seeder
             ],
             [
                 'order_id'      => NULL,
+                'daily_price_id'=> 3,
                 'product_id'    => 3,
                 'customer_id'   => 1,
                 'quantity'      => 4,

@@ -21,12 +21,13 @@ class AddToCartControllerAPI extends Controller
             $id     = $req->UserId;
             $data   = [];
             $cart   = DB::table('add_to_cart as ac')
+                    ->join('daily_price_list as dpl', 'dpl.id', '=', 'ac.daily_price_id')
                     ->join('products as pd','pd.id','ac.product_id')
                     ->select(
                         'ac.id',
                         'pd.item',
                         'pd.photo',
-                        'pd.price',
+                        'dpl.price',
                         'ac.quantity',
                         'ac.product_id',
                         'ac.customer_id'
@@ -71,10 +72,12 @@ class AddToCartControllerAPI extends Controller
     public function AddToCart(Request $req){
         try{
             $req->validate([
+                'DailyPriceId'  => 'required',
                 'ProductId'     => 'required',
                 'Quantity'      => 'required',
                 'CustomerId'    => 'required',
             ]);
+            $dpi    = $req->input('DailyPriceId');
             $id     = $req->input('ProductId');
             $cId    = $req->input('CustomerId');
             $qun    = $req->input('Quantity');
@@ -88,6 +91,7 @@ class AddToCartControllerAPI extends Controller
                     ->count();
             if($check <1){
                 $insert_data    = [
+                                    'daily_price_id'=> $dpi,
                                     'product_id'    => $id,
                                     'customer_id'   => $cId,
                                     'quantity'      => $qun,
@@ -99,18 +103,19 @@ class AddToCartControllerAPI extends Controller
                         ->insertGetId($insert_data);
                 if($insert){
                     $cart   = DB::table('add_to_cart as ac')
+                            ->join('daily_price_list as dpl', 'dpl.id', '=', 'ac.daily_price_id')
                             ->join('products as pd','pd.id','ac.product_id')
                             ->select(
                                 'ac.id',
                                 'pd.item',
                                 'pd.photo',
-                                'pd.price',
+                                'dpl.price',
                                 'ac.quantity',
                                 'ac.product_id',
                                 'ac.customer_id'
                             )
                             ->where([
-                                'ac.customer_id'   => $id,
+                                'ac.customer_id'   => $cId,
                                 'ac.status'        => 0,
                             ])
                             ->get();
