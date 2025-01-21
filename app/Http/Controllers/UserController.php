@@ -24,34 +24,39 @@ class UserController extends Controller
     
     public function create_user(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'profilei' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'password' => 'required|string|min:5',
-            'status' => 'required',
-            'email' => 'required|email',
-            'mobile' => 'required|string|max:15',
-        ]);
-
-        $profileImagePath = null;
-        if ($request->hasFile('profilei')) {
-            $profileImagePath = $request->file('profilei')->store('profile_images', 'public');
+        try{
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'profilei' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'password' => 'required|string|min:5',
+                'status' => 'required',
+                'email' => 'required|email',
+                'mobile' => 'required|string|max:15',
+            ]);
+    
+            $profileImagePath = null;
+            if ($request->hasFile('profilei')) {
+                $profileImagePath = $request->file('profilei')->store('profile_images', 'public');
+            }
+    
+            $user = new Employee();
+            $user->name = $validatedData['name'];
+            $user->username = $validatedData['username'];
+            $user->address = $validatedData['address'];
+            $user->profile = $profileImagePath;
+            $user->password = Hash::make($validatedData['password']);
+            $user->status = $validatedData['status'];
+            $user->email = $validatedData['email'];
+            $user->mobile = $validatedData['mobile'];
+            $user->save();
+    
+            return redirect()->route('users')->with('success', 'User added successfully!');
+        }catch(\Exception $e){
+            return redirect()->back()->with('Warning', $e->getMessage());
         }
-
-        $user = new Employee();
-        $user->name = $validatedData['name'];
-        $user->username = $validatedData['username'];
-        $user->address = $validatedData['address'];
-        $user->profile = $profileImagePath;
-        $user->password = Hash::make($validatedData['password']);
-        $user->status = $validatedData['status'];
-        $user->email = $validatedData['email'];
-        $user->mobile = $validatedData['mobile'];
-        $user->save();
-
-        return redirect()->route('users')->with('success', 'User added successfully!');
+        
     }
 
     public function edit_user($id){
@@ -61,7 +66,8 @@ class UserController extends Controller
 
     public function updateUser(Request $request, $id)
     {
-        // Validate form data
+        try{
+            // Validate form data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255',
@@ -96,6 +102,10 @@ class UserController extends Controller
 
         // Redirect back with success message
         return redirect()->route('users')->with('success', 'User updated successfully!');
+        }catch(\Exception $e){
+            return redirect()->back()->with('Warning', $e->getMessage());
+        }
+        
     }
 
     public function delete_user(Request $req, $id){

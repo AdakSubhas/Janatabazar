@@ -20,7 +20,7 @@
     
 }
 .login_input input{
-    background: transparent;
+    background: white;
 }
 .login_input input::placeholder{
     color: #fff;
