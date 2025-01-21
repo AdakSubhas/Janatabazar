@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class add_to_cart extends Seeder
 {
@@ -21,7 +22,7 @@ class add_to_cart extends Seeder
                 'customer_id'   => 1,
                 'quantity'      => 2,
                 'status'        => 0,
-                'created_at'    => Date::now(),
+                'created_at'    => carbon::now(),
             ],
             [
                 'order_id'      => NULL,
@@ -29,7 +30,7 @@ class add_to_cart extends Seeder
                 'customer_id'   => 1,
                 'quantity'      => 3,
                 'status'        => 0,
-                'created_at'    => Date::now(),
+                'created_at'    => carbon::now(),
             ],
             [
                 'order_id'      => NULL,
@@ -37,7 +38,7 @@ class add_to_cart extends Seeder
                 'customer_id'   => 1,
                 'quantity'      => 4,
                 'status'        => 0,
-                'created_at'    => Date::now(),
+                'created_at'    => carbon::now(),
             ],
         ]);
     }

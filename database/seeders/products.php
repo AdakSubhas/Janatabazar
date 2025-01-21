@@ -16,8 +16,8 @@ class products extends Seeder
         DB::table('products')->insert([
             [
                 'category_id'   => 1,
-                'item'         => 'Carrots',
-                'price'         => 40.00,
+                'serial_number' => 'janata0001',
+                'item'          => 'Carrots',
                 'units'         => 'kilogram',
                 'min_order'     => '1',
                 'max_order'     => '10',
@@ -25,8 +25,8 @@ class products extends Seeder
             ],
             [
                 'category_id'   => 1,
-                'item'         => 'Potatoes',
-                'price'         => 20.00,
+                'serial_number' => 'janata0002',
+                'item'          => 'Potatoes',
                 'units'         => 'kilogram',
                 'min_order'     => '1',
                 'max_order'     => '10',
@@ -34,8 +34,8 @@ class products extends Seeder
             ],
             [
                 'category_id'   => 1,
-                'item'         => 'Tomatoes',
-                'price'         => 10.00,
+                'serial_number' => 'janata0003',
+                'item'          => 'Tomatoes',
                 'units'         => 'kilogram',
                 'min_order'     => '1',
                 'max_order'     => '10',
@@ -43,8 +43,8 @@ class products extends Seeder
             ],
             [
                 'category_id'   => 2,
-                'item'         => 'Checken',
-                'price'         => 200.00,
+                'serial_number' => 'janata0004',
+                'item'          => 'Checken',
                 'units'         => 'kilogram',
                 'min_order'     => '1',
                 'max_order'     => '10',
@@ -52,8 +52,8 @@ class products extends Seeder
             ],
             [
                 'category_id'   => 2,
-                'item'         => 'Checken Leg(6 Pis)',
-                'price'         => 220.00,
+                'serial_number' => 'janata0005',
+                'item'          => 'Checken Leg(6 Pis)',
                 'units'         => 'kilogram',
                 'min_order'     => '1',
                 'max_order'     => '10',

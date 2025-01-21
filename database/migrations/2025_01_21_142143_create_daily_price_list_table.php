@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->integer('state_id');
             $table->integer('district_id');
-            $table->integer('city_id');
+            $table->integer('pin_id');
             $table->integer('category_id');
             $table->integer('product_id');
             $table->double('price',8,2);

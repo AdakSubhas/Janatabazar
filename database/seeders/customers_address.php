@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class customers_address extends Seeder
 {
@@ -22,7 +23,7 @@ class customers_address extends Seeder
                 'state'         => 'West Bengal',
                 'zipcode'       => '721507',
                 'status'        => 1,
-                'created_at'    => Date::now(),
+                'created_at'    => carbon::now(),
             ],
         ]);
     }
