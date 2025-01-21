@@ -84,10 +84,10 @@
                                                     @endif
                                                     <td>
                                                         <div class="btn-group btn-group-sm" role="group">
-                                                            <a href="{{url('edit-user/'.$value->id)}}"><button type="button" class="btn  btn-warning mx-1">
+                                                            <a href="{{url('edit-store/'.$value->id)}}"><button type="button" class="btn  btn-warning mx-1">
                                                                 <i class="simple-icon-note" data-toggle="tooltip" data-placement="top" data-original-title="Edit">Edit</i>
                                                             </button></a>
-                                                            <a href="{{ url('delete-user/'.$value->id) }}"><button type="button" class="btn btn-danger">
+                                                            <a href="{{ url('delete-store/'.$value->id) }}"><button type="button" class="btn btn-danger">
                                                                 <i class="simple-icon-trash" data-toggle="tooltip" data-placement="top" data-original-title="Delete">Delete</i>
                                                             </button></a>
                                                             

@@ -46,26 +46,29 @@
                                         <table class="table table-striped table-bordered file-export">
                                             <thead>
                                                 <tr>
-                                                    <th>SL No</th>
+                                                    <th>Sl No</th>
                                                     <th>Name</th>
                                                     <th>Status</th>
-                                                    <th>Items</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach($data as $value)
                                                 <tr>
-                                                    <td>1</td>
-                                                    <td>Fruits</td>
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <td>{{$value->category_name}}</td>
+                                                    @if($value->status == 1)
                                                     <td>Active</td>
-                                                    <td>View</td>
+                                                    @else
+                                                    <td>Inactive</td>
+                                                    @endif
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <th>SL No</th>
+                                                    <th>Sl No</th>
                                                     <th>Name</th>
                                                     <th>Status</th>
-                                                    <th>Items</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
