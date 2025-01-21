@@ -43,6 +43,13 @@
 
     <!-- BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="../../../assets/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <!-- END: Custom CSS-->
 
 </head>
@@ -91,7 +98,16 @@
         </div>
     </nav>
     <!-- END: Header-->
-
+    <script>
+        @if (session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
+    
+        @if (session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
+    </script>
+    
 
     <!-- BEGIN: Main Menu-->
 
@@ -110,7 +126,7 @@
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Category And Itmes</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Category</span></a>
+                        <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Category List</span></a>
                         </li>
                         <li><a class="menu-item" href="{{route('category')}}"><i></i><span data-i18n="Users List">Add Category</span></a>
                         </li>
