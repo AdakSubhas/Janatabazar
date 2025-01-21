@@ -52,6 +52,7 @@
                                                     <th>Email</th>
                                                     <th>Address</th>
                                                     <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -67,6 +68,17 @@
                                                     @else
                                                     <td>Inactive</td>
                                                     @endif
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm" role="group">
+                                                            <a href="{{url('edit-user/'.$value->id)}}"><button type="button" class="btn  btn-warning mx-1">
+                                                                <i class="simple-icon-note" data-toggle="tooltip" data-placement="top" data-original-title="Edit">Edit</i>
+                                                            </button></a>
+                                                            <a href="{{ url('delete-user/'.$value->id) }}"><button type="button" class="btn btn-danger">
+                                                                <i class="simple-icon-trash" data-toggle="tooltip" data-placement="top" data-original-title="Delete">Delete</i>
+                                                            </button></a>
+                                                            
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
