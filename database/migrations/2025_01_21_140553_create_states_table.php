@@ -12,14 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->string('name',255)->nullable();
-            $table->string('mobile',255)->unique();
-            $table->string('email',255)->unique()->nullable();
-            $table->string('password',255)->nullable();
-            $table->string('photo',255)->nullable();
-            $table->tinyInteger('status')->comment('1="Active",0="Inactive"')->default(0);
+            $table->string('name', 50);
+            $table->tinyInteger('status')->comment('1="Active",0="Inactive"')->default(1);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
         });
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('states');
     }
 };
