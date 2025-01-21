@@ -1,0 +1,52 @@
+.bg-login{
+    background-color: #234334;
+    background-image: url(../image/pg-bg2.png);
+    background-repeat: repeat;
+}
+.login_card_bg{
+    background-color: #154626;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #efefee;
+}
+.user_image h2{
+    color: #fff;
+    padding-top: 20px;
+   
+   
+}
+.user_image h2{
+    
+    
+}
+.login_input input{
+    background: transparent;
+}
+.login_input input::placeholder{
+    color: #fff;
+}
+
+.login_input label{
+    color: #fff;
+}
+.login_input a{
+    color: #fff;
+}
+.login_input button{
+    background-color: #FAFFD5;
+    color: #0d2902;
+    border: #FAFFD5;
+}
+.login_input button:hover{
+    background-color: #0d2902;
+}
+.card_logo{
+    text-align: center;
+    margin-top: -90px;
+}
+.card_logo img{
+    width: 100px;
+}
+.login_input input{
+    border-color: #fff;
+}
