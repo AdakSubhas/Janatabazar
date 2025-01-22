@@ -22,7 +22,7 @@ class ProductControllerAPI extends Controller
             foreach($fetch as $val){
                 $photo = $val->icon
                         ? env('APP_URL') . 'storage/CategoriesIcon/' . $product->photo
-                        : env('APP_URL') . 'storage/CategoriesIcon/default.jpg';
+                        : env('APP_URL') . 'storage/CategoriesIcon/default.png';
                 $data[] = [
                             'Id'    => $val->id,
                             'Name'  => $val->category_name,
@@ -92,7 +92,7 @@ class ProductControllerAPI extends Controller
             foreach ($products as $product) {
                 $photo  = $product->photo
                         ? env('APP_URL') . 'storage/Product/' . $product->photo
-                        : env('APP_URL') . 'storage/Product/default.jpg';
+                        : env('APP_URL') . 'storage/Product/default.png';
                         
                 $data[] = [
                     'ProductCategoryId'   => $product->pc_id,
