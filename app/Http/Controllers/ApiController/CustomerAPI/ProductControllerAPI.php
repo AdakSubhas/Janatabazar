@@ -50,9 +50,14 @@ class ProductControllerAPI extends Controller
     public function ProductList(Request $req){
         try {
             $req->validate([
-                'pincode'   => 'required',
+                // 'pincode'   => 'required',
             ]);
-            $pin    = $req->input('pincode');
+            if($req->input('pincode') ==  NULL){
+                $pin    = '721507';
+            }
+            else{
+                $pin    = $req->input('pincode');
+            }
             $output = [];
             $data   = [];
             $PinCheck   = DB::table('pincodes')

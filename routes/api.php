@@ -28,6 +28,8 @@ Route::controller(CLCAPI::class)->group(function () {
     Route::post('Customer-Address-Edit', 'CustomerAddressEdit');
     Route::post('Customer-Address-Delete', 'CustomerAddressDelete');
     Route::post('Customer-Address-List', 'CustomerAddressList');
+    Route::post('Customer-Password-Change', 'CustomerPasswordChange');
+    Route::post('Customer-Profile-Edit', 'CustomerProfileEdit');
 });
 Route::controller(CPCAPI::class)->group(function () {
     Route::post('Product-List', 'ProductList');
