@@ -7,7 +7,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\DeliveryPartnerController;
 use App\Http\Controllers\ProductCategoryController;
-
+use App\Http\Controllers\BillDeskController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\PriceListController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,10 +71,19 @@ Route::get('/main', function () {
     return view('maintenance_page');
 });
 
-
+Route::post('/billdesk/order', [TestController::class, 'createOrder']);
 
 Route::get('/welcome', function () {
-    return view('welcome');
+    return view('dashboard');
 });
+
+Route::get('/payment', [BillDeskController::class, 'showPaymentForm'])->name('payment.form');
+Route::post('/payment/initiate', [BillDeskController::class, 'initiatePayment'])->name('payment.initiate');
+Route::post('/payment/callback', [BillDeskController::class, 'handleCallback'])->name('payment.callback');
+
+Route::get('/daily-price-list', [PriceListController::class, 'DailyPriceList'])->name('daily-price-list');
+Route::post('/upload-csv', [PriceListController::class, 'uploadCsv'])->name('upload.csv');
+
+
 
 require __DIR__.'/auth.php';

@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
             customers::class,
             product_categories::class,
             products::class,
+            add_to_cart::class,
+            customers_address::class,
+            daily_price_list::class,
+            EmployeeSeeder::class,
         ]);
     }
 }
