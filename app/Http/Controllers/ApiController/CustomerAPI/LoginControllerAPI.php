@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\ApiController\CustomerAPI;
 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -37,21 +38,21 @@ class LoginControllerAPI extends Controller
             $mobile     = $req->mobile;
             $created_at = Carbon::now();
 
-            if ($photo = $req->file('photo')){
-                $photo = date('Y-m-d-H-i-s').rand(1000,9999).$req->file('photo')->getClientOriginalName();
-                $ext = $req->file('photo')->getClientOriginalExtension();
-                $req->file('photo')->storeAs('public/Customer', $photo);
-            }
-            else{
-                $photo='';
-            }
+            // if ($photo = $req->file('photo')){
+            //     $photo = date('Y-m-d-H-i-s').rand(1000,9999).$req->file('photo')->getClientOriginalName();
+            //     $ext = $req->file('photo')->getClientOriginalExtension();
+            //     $req->file('photo')->storeAs('public/Customer', $photo);
+            // }
+            // else{
+            //     $photo='';
+            // }
 
             if($password === $CPassword){
                 $insert     = DB::table('customers')->insertGetId([
                                 'name'      => $name,
                                 'username'  => $username,
                                 'password'  => Hash::make($password),
-                                'photo'     => $photo,
+                                // 'photo'     => $photo,
                                 'email'     => $email,
                                 'mobile'    => $mobile,
                                 'status'    => 1,
@@ -71,7 +72,8 @@ class LoginControllerAPI extends Controller
                                 ->where('ca.status',1)
                                 ->select(
                                     'cu.id as user_id',
-                                    DB::raw("CONCAT('" . env('APP_URL') . "storage/Customer/', cu.photo) as ProfilePhoto"),
+                                    DB::raw("CONCAT('" . env('APP_URL') . "storage/Customer/default.jpg', cu.photo) as ProfilePhoto"),
+                                    // DB::raw("IF(cu.photo IS NOT NULL AND cu.photo != '', CONCAT('" . env('APP_URL') . "storage/Customer/', cu.photo), CONCAT('" . env('APP_URL') . "storage/Customer/default.jpg')) as ProfilePhoto"),
                                     'cu.name as Name',
                                     'cu.mobile as Mobile',
                                     'cu.email as Email',
@@ -150,8 +152,7 @@ class LoginControllerAPI extends Controller
                         $data   = [
                                     'Id'        => $find->id,
                                     'Name'      => $find->name,
-                                    'UserName'  => $find->username,
-                                    'Photo'     => env('APP_URL').'storage/Customer/'.$find->photo ?? NULL,
+                                    'Photo'     => !empty($find->photo) ? env('APP_URL').'storage/Customer/'.$find->id.'/'.$find->photo : env('APP_URL').'storage/Customer/default.jpg',
                                     'Email'     => $find->email ?? NULL,
                                     'Mobile'    => $find->mobile,
                                     'Address'   => $find1->address ?? NULL,
@@ -446,10 +447,162 @@ class LoginControllerAPI extends Controller
     public function CustomerProfileEdit(Request $req){
         try{
             $req->validate([
-                'id' => 'required',
-                'name' => 'required',
-                'phone' => 'required',
+                'id'            => 'required',
+                'name'          => 'required',
+                'Profile_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             ]);
+            $id     = $req->input('id');
+            $name   = $req->input('name');
+            $email  = $req->input('email');
+            $photo  = $req->input('Profile_image');
+            $data   = [];
+            $output = [];
+            $update_data1   = [];
+
+            $check  = DB::table('customers')
+                    ->where([
+                        'id' => $id,
+                        'status' => 1
+                    ])
+                    ->first();
+            if($check){
+                if (!empty($photo)) {
+                    // Define the folder path relative to storage/app/public
+                    $folderPath = 'Customer/' . $id;
+                    
+                    // Create the directory if it doesn't exist
+                    if (!Storage::disk('public')->exists($folderPath)) {
+                        Storage::disk('public')->makeDirectory($folderPath);
+                    }
+                
+                    // Check and delete the existing image
+                    $existingImagePath = 'public/Customer/'.$id.'/'. $check->photo; // Assuming `$check->photo` holds the current image name
+                    if (Storage::exists($existingImagePath)) {
+                        if (Storage::delete($existingImagePath)) {
+                            $message = "Existing image deleted successfully.";
+                        } else {
+                            $message = "Failed to delete the existing image.";
+                        }
+                    } else {
+                        $message = "Existing image not found.";
+                    }
+                
+                    // Generate a new image name and save the new image
+                    $imageName = date('Y-m-d-H-i-s') . rand(1000, 9999) . '.' . $photo->getClientOriginalExtension();
+                    $photo->storeAs('public/Customer/' . $id, $imageName); // Save in the specific folder
+                } else {
+                    // Keep the existing photo if no new photo is provided
+                    $imageName = $check->photo; // Assuming `$check->photo` has the current image name
+                }
+                
+                // Prepare data for updating the customer
+                $update_data1 = [
+                    'name'       => $name,
+                    'email'      => $email,
+                    'photo'      => $imageName,
+                    'updated_at' => now(),
+                ];
+                
+                // Update the customer details in the database
+                $update_details = DB::table('customers')
+                                ->where('id', $id)
+                                ->update($update_data1);
+                if($update_details){
+                    $find1  = DB::table('customer_address')
+                                ->where([
+                                    'customer_id'   => $id,
+                                    'status'        => 1,
+                                ])
+                                ->first();
+                    $data   = [
+                                'Id'        => $id,
+                                'Name'      => $name,
+                                'Photo'     => !empty($imageName) ? env('APP_URL').'storage/Customer/'.$id.'/'.$imageName : env('APP_URL').'storage/Customer/default.jpg',
+                                'Email'     => $email ?? NULL,
+                                'Mobile'    => $check->mobile,
+                                'Address'   => $find1->address ?? NULL,
+                                'City'      => $find1->city ?? NULL,
+                                'State'     => $find1->state ?? NULL,
+                                'zipcode'   => $find1->zipcode ?? NULL,
+                                'Status'    => $check->status,
+                            ];
+                    $output['response'] = 'sucess';
+                    $output['message']  = 'Profile data update successfully';
+                    $output['data']     = $data;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'failed';
+                    $output['message']  = 'profile data update failed';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'User Not found';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        catch(\Exception $e){
+            // Log the exception
+            Log::error('Customer profile update request processing error: ' . $e->getMessage());
+            
+            $output = [
+                'response' => 'failed',
+                'message1' => 'An error occurred while processing customer profile edit request',
+                'message'  => $e->getMessage(),
+                'error'    => $e->getMessage()
+            ];
+        }
+        return response()->json($output);
+    }
+    public function CustomerPasswordChange(Request $req){
+        try{
+            $req->validate([
+                'id'                    => 'required',
+                'password'              => 'required|string|min:8|confirmed',
+                'password_confirmation' => 'required|string|min:8'
+            ],
+            [
+                'password.confirmed' => 'The password and confirm password do not match.',
+                'password.min'       => 'The password must be at least 8 characters long.',
+            ]);
+            $id = $req->input('id');
+            $pas= $req->input('password');
+            $check  = DB::table('customers')
+                    ->where([
+                        'id'    => $id,
+                        'status'=> 1,
+                    ])
+                    ->count();
+            if($check){
+                $update = DB::table('customers')
+                        ->where('id',$id)
+                        ->update([
+                            'password'  => bcrypt($pas),
+                            'updated_at'=> now(),
+                        ]);
+                if($update){
+                    $output['response'] = 'sucess';
+                    $output['message']  = 'Password change successfully';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'failed';
+                    $output['message']  = 'Failed to change password. Please try again...';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'User Not found';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
         }
         catch(\Exception $e){
             // Log the exception

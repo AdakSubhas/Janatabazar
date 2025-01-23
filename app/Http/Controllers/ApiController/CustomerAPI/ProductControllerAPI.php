@@ -22,7 +22,7 @@ class ProductControllerAPI extends Controller
             foreach($fetch as $val){
                 $photo = $val->icon
                         ? env('APP_URL') . 'storage/CategoriesIcon/' . $product->photo
-                        : env('APP_URL') . 'storage/CategoriesIcon/default.jpg';
+                        : env('APP_URL') . 'storage/CategoriesIcon/default.png';
                 $data[] = [
                             'Id'    => $val->id,
                             'Name'  => $val->category_name,
@@ -47,36 +47,66 @@ class ProductControllerAPI extends Controller
 
         return response()->json($output);
     }
-    public function ProductList(){
+    public function ProductList(Request $req){
         try {
+            $req->validate([
+                // 'pincode'   => 'required',
+            ]);
+            if($req->input('pincode') ==  NULL){
+                $pin    = '721507';
+            }
+            else{
+                $pin    = $req->input('pincode');
+            }
             $output = [];
             $data   = [];
+            $PinCheck   = DB::table('pincodes')
+                        ->where([
+                            'pincode'   => $pin,
+                            'status'    => 1,
+                        ])
+                        ->value('id');
 
-            $PCat   = DB::table('product_categories')
-                    ->where('status', 1)
-                    ->get();
-
-            foreach ($PCat as $val) {
-                $products   = DB::table('products')
-                            ->where(['category_id' => $val->id, 'status' => 1])
+            $products   = DB::table('daily_price_list as dpl')
+                        ->join('product_categories as pc','pc.id','dpl.category_id')
+                        ->join('products as prod','prod.id','dpl.product_id')
+                        ->where('dpl.pin_id',$PinCheck)
+                        ->where('dpl.status',1)
+                        ->where('pc.status',1)
+                        ->where('prod.status',1)
+                        ->select(
+                            'pc.id as pc_id',
+                            'pc.category_name',
+                            'prod.id as prod_id',
+                            'prod.item',
+                            'prod.photo',
+                            'dpl.id as dpl_id',
+                            'dpl.price',
+                            'prod.units',
+                            'prod.min_order',
+                            'prod.max_order',
+                            'prod.description',
+                            )
                             ->get();
-                foreach ($products as $product) {
-                    $photo = $product->photo
+
+            foreach ($products as $product) {
+                $photo  = $product->photo
                         ? env('APP_URL') . 'storage/Product/' . $product->photo
-                        : env('APP_URL') . 'storage/Product/default.jpg';
+                        : env('APP_URL') . 'storage/Product/default.png';
                         
-                    $data[] = [
-                        'ProductCategoryId'   => $val->id,
-                        'ProductCategoryName' => $val->category_name,
-                        'ProductName'         => $product->item,
-                        'ProductImage'        => $photo,
-                        'ProductPrice'        => $product->price,
-                        'ProductUnits'        => $product->units,
-                        'ProductMinOrder'     => $product->min_order,
-                        'ProductMaxOrder'     => $product->max_order,
-                        'ProductDescription'  => $product->description,
-                    ];
-                }
+                $data[] = [
+                    'ProductCategoryId'   => $product->pc_id,
+                    'ProductCategoryName' => $product->category_name,
+                    'ProductId'           => $product->prod_id,
+                    'ProductName'         => $product->item,
+                    'ProductImage'        => $photo,
+                    'DailyPriceId'        => $product->dpl_id,
+                    'ProductPrice'        => $product->price,
+                    'ProductUnits'        => $product->units,
+                    'ProductMinOrder'     => $product->min_order,
+                    'ProductMaxOrder'     => $product->max_order,
+                    'ProductDescription'  => $product->description,
+                ];
             }
 
             $output['response'] = 'success';
