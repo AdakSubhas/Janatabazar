@@ -25,11 +25,9 @@
                                 
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label class="form-label">Default File Upload</label>
                                         <div class="form-control-wrap">
-                                            
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="customFile" name="csv_upload_t1">
+                                                <input type="file" class="custom-file-input" id="customFile" name="daily_price_list" onchange="updateFileName(this)">
                                                 <label class="custom-file-label" for="customFile">Choose file</label>
                                             </div>
                                            
@@ -39,12 +37,12 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
-                                    <button type="submit" class="btn btn-primary uploadbtn">Upload</button>
+                                <div class="col-sm-2">
+                                    <button type="submit" class="btn btn-primary uploadbtn w-100">Upload</button>
                                 </div>
                                  
                                 <div class="col-sm-3">
-                                    <a href="<?= env('APP_URL')?>datafile/t2_stock.csv" class="btn btn-success uploadbtn"><span>Download Sample Format</span>
+                                    <a href="<?= env('APP_URL')?>/datafile/daily_price_list.csv" class="btn btn-success uploadbtn w-100"><span>Download Sample Format</span>
                                     <em class="icon ni ni-download"></em>
                                     </a>
                                 </div>
@@ -78,7 +76,7 @@
                                                     <th>Sl No</th>
                                                     <th>State</th>
                                                     <th>District</th>
-                                                    <th>City</th>
+                                                    <th>Pincode</th>
                                                     <th>Category</th>
                                                     <th>Product</th>
                                                     <th>Price</th>
@@ -92,10 +90,15 @@
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{   DB::table('states')->where('id',$value->state_id)->value('name')  }}</td>
                                                     <td>{{   DB::table('districts')->where('id',$value->district_id)->value('name')  }}</td>
-                                                    <td>{{   DB::table('citys')->where('id',$value->city_id)->value('name')  }}</td>
+                                                    <td>{{   DB::table('pincodes')->where('id',$value->pin_id)->value('pincode')  }}</td>
                                                     <td>{{   DB::table('product_categories')->where('id',$value->category_id)->value('category_name')  }}</td>
                                                     <td>{{   DB::table('products')->where('id',$value->product_id)->value('item')  }}</td>
                                                     <td>{{$value->price}}</td>
+                                                    @if($value->status == 1)
+                                                    <td>Active</td>
+                                                    @else
+                                                    <td>Inactive</td>
+                                                    @endif
                                                     @if(isset($value->updated_at))
                                                     <td>{{$value->updated_at}}</td>
                                                     @else
@@ -109,7 +112,7 @@
                                                     <th>Sl No</th>
                                                     <th>State</th>
                                                     <th>District</th>
-                                                    <th>City</th>
+                                                    <th>Pincode</th>
                                                     <th>Category</th>
                                                     <th>Product</th>
                                                     <th>Price</th>
@@ -129,4 +132,12 @@
             </div>
         </div>
     </div>
+    <script>
+        function updateFileName(input) {
+            const fileName = input.files[0] ? input.files[0].name : "Choose file";
+            const label = input.nextElementSibling; // The label element
+            label.textContent = fileName;
+        }
+
+    </script>
 @include('layouts.footer')
