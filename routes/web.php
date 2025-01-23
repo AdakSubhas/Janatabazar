@@ -165,7 +165,7 @@ Route::get('/single-migrate-and-seed', function () {
 
 //---------------------------------------------------END---------------------------------------------------
 
-Route::get('/', function () {
+Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -228,6 +228,45 @@ Route::post('/payment/callback', [BillDeskController::class, 'handleCallback'])-
 Route::get('/daily-price-list', [PriceListController::class, 'DailyPriceList'])->name('daily-price-list');
 Route::post('/upload-csv', [PriceListController::class, 'uploadCsv'])->name('upload.csv');
 
-
+Route::post('/request-store',[StoreController::class, 'requestStore'])->name('request-store');
+Route::get('/', function () {
+    return view('website.index');
+});
+Route::get('/about', function () {
+    return view('website.about');
+});
+Route::get('/blog', function () {
+    return view('website.index');
+});
+Route::get('/blog-details', function () {
+    return view('website.index');
+});
+Route::get('/testimonial', function () {
+    return view('website.testimonial');
+});
+Route::get('/privacy-policy', function () {
+    return view('website.privacy-policy');
+});
+Route::get('/price-guide', function () {
+    return view('website.price-guide');
+});
+Route::get('/groceries-for-a-healthy-and-happy-home', function () {
+    return view('website.groceries-for-a-healthy-and-happy-home');
+});
+Route::get('/franchise', function () {
+    return view('website.franchise');
+});
+Route::get('/fish-meat-for-a-healthy-lisfestyle', function () {
+    return view('website.fish-meat-for-a-healthy-lisfestyle');
+});
+Route::get('/contact', function () {
+    return view('website.contact');
+});
+Route::get('/terms-conditation', function () {
+    return view('website.terms-conditation');
+});
+Route::get('/refund-policy', function () {
+    return view('website.refund-policy');
+});
 
 require __DIR__.'/auth.php';
