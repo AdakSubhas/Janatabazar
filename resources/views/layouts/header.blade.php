@@ -138,7 +138,7 @@
                     <ul class="menu-content">
                         <li><a class="menu-item" href="{{route('store-list')}}"><i></i><span data-i18n="Users List">List</span></a>
                         </li>
-                        <li><a class="menu-item" href="{{route('add- store')}}"><i></i><span data-i18n="Users List">Add New Store</span></a>
+                        <li><a class="menu-item" href="{{route('add-store')}}"><i></i><span data-i18n="Users List">Add New Store</span></a>
                         </li>
                     </ul>
                 </li>
@@ -152,7 +152,7 @@
                 </li>
                 <li class=" nav-item"><a href="#"><i class="la la-user"></i><span class="menu-title" data-i18n="Users">Daily Price</span></a>
                     <ul class="menu-content">
-                        <li><a class="menu-item" href="{{route('users')}}"><i></i><span data-i18n="Users List">Daily Price Upload</span></a>
+                        <li><a class="menu-item" href="{{route('daily-price-list')}}"><i></i><span data-i18n="Users List">Daily Price Upload</span></a>
                         </li>
                     </ul>
                 </li>
