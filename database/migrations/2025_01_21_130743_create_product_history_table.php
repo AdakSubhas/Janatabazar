@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('state',255);
             $table->string('district',255);
-            $table->string('city',255);
+            $table->string('zipcode',255);
             $table->string('serial_number',255);
             $table->double('price',8,2);
             $table->string('units',255);

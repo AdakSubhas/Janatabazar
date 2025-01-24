@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController\CustomerAPI\OrderControllerAPI as COCAPI;
 use App\Http\Controllers\ApiController\CustomerAPI\LoginControllerAPI as CLCAPI;
 use App\Http\Controllers\ApiController\CustomerAPI\ProductControllerAPI as CPCAPI;
 use App\Http\Controllers\ApiController\CustomerAPI\AddToCartControllerAPI as CATCCAPI;
@@ -34,6 +35,11 @@ Route::controller(CLCAPI::class)->group(function () {
 Route::controller(CPCAPI::class)->group(function () {
     Route::post('Product-List', 'ProductList');
     Route::get('Product-Categories', 'ProductCategories');
+});
+Route::controller(COCAPI::class)->group(function () {
+    Route::post('Shop-And-Delivery-Active', 'ShopAndDeliveryActive');
+    Route::post('Add-Order', 'AddOrder');
+    Route::post('Order-List', 'OrderList');
 });
 Route::controller(CATCCAPI::class)->group(function () {
     Route::post('Add-To-Cart-List', 'AddToCartList');

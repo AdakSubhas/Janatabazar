@@ -14,12 +14,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id',255);
-            $table->integer('cusromer_id');
+            $table->string('order_id',255)->unique();
+            $table->integer('customer_id');
             $table->string('address_id',255)->comment('Customer Address');
             $table->integer('store_id');
             $table->integer('delivery_id');
-            $table->tinyInteger('status')->default(0)->nullable();
+            $table->tinyInteger('status')->default(0)->comment("0='panding from store',2='accept from delivery',1='receive customer'");
             $table->integer('otp1')->comment('for store & delivey')->nullable();
             $table->integer('otp2')->comment('for customer & delivery')->nullable();
             $table->double('price', 8, 2)->nullable();

@@ -19,6 +19,7 @@ class AddToCartControllerAPI extends Controller
                 'UserId' => 'required',
                 ]);
             $id     = $req->UserId;
+            $tprice = 0;
             $data   = [];
             $cart   = DB::table('add_to_cart as ac')
                     ->join('daily_price_list as dpl', 'dpl.id', '=', 'ac.daily_price_id')
@@ -50,11 +51,13 @@ class AddToCartControllerAPI extends Controller
                     'ProductPrice'  => $val->price,
                     'Quantity'      => $val->quantity,
                 ];
+                $tprice += ($val->price*$val->quantity);
             }
-            $output['response'] = 'success';
-            $output['message'] = 'Add to Cart data fetched successfully';
-            $output['data'] = $data;
-            $output['error'] = null;
+            $output['response']     = 'success';
+            $output['message']      = 'Add to Cart data fetched successfully';
+            $output['data']         = $data;
+            $output['TotalPrice']   = $tprice;
+            $output['error']        = null;
         }
         catch (\Exception $e) {
             // Log the exception
