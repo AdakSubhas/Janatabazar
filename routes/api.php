@@ -40,6 +40,8 @@ Route::controller(COCAPI::class)->group(function () {
     Route::post('Shop-And-Delivery-Active', 'ShopAndDeliveryActive');
     Route::post('Add-Order', 'AddOrder');
     Route::post('Order-List', 'OrderList');
+    Route::post('Order-History-List', 'OrderHistory');
+    Route::post('Order-History-List-Items', 'OrderHistoryItems');
 });
 Route::controller(CATCCAPI::class)->group(function () {
     Route::post('Add-To-Cart-List', 'AddToCartList');

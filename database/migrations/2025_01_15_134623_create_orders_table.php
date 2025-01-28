@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('otp1')->comment('for store & delivey')->nullable();
             $table->integer('otp2')->comment('for customer & delivery')->nullable();
             $table->double('price', 8, 2)->nullable();
-            $table->double('discount', 8, 2)->nullable();
+            $table->double('discount', 8, 2)->default(0);
             $table->double('total', 8, 2)->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamp('deleted_at')->nullable();

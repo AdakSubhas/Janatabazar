@@ -134,6 +134,7 @@ class OrderControllerAPI extends Controller
                                         'status'        => 0,
                                         'otp1'          => $otp,
                                         'price'         => $price,
+                                        'total'         => $price,
                                         'created_at'    => now()
                                     ];
                     $order_insert   = DB::table('orders')->insertGetId($insert_data);
@@ -215,23 +216,26 @@ class OrderControllerAPI extends Controller
                                 ->first();
             if($check){
                 $cart   = DB::table('add_to_cart as ac')
-                            ->join('daily_price_list as dpl', 'dpl.id', '=', 'ac.daily_price_id')
-                            ->join('products as pd','pd.id','ac.product_id')
-                            ->select(
-                                'ac.id',
-                                'pd.item',
-                                'pd.photo',
-                                'dpl.price',
-                                'ac.quantity',
-                                'ac.product_id',
-                                'ac.customer_id'
-                            )
-                            ->where([
-                                'ac.order_id'       => $check->order_id,
-                                'ac.customer_id'    => $CId,
-                                'ac.status'         => 2,
-                            ])
-                            ->get();
+                        ->join('orders as od','od.order_id','ac.order_id')
+                        ->join('daily_price_list as dpl', 'dpl.id', '=', 'ac.daily_price_id')
+                        ->join('products as pd','pd.id','ac.product_id')
+                        ->select(
+                            'ac.id',
+                            'pd.item',
+                            'pd.photo',
+                            'dpl.price',
+                            'od.discount',
+                            'od.total',
+                            'ac.quantity',
+                            'ac.product_id',
+                            'ac.customer_id'
+                        )
+                        ->where([
+                            'ac.order_id'       => $check->order_id,
+                            'ac.customer_id'    => $CId,
+                            'ac.status'         => 2,
+                        ])
+                        ->get();
                 foreach($cart as $val){
                     $photo  = $val->photo
                             ? env('APP_URL') . 'storage/Product/' . $val->photo
@@ -248,11 +252,58 @@ class OrderControllerAPI extends Controller
                 }
                 $data['DeliveryPartnerName']    = $delivery_partner->name;
                 $data['DeliveryPartnerMobile']  = $delivery_partner->mobile;
-                $data['TotalPrice'] = $check->price;
-                $data['TotalPrice'] = $check->price;
+                $data['ProductPrice']   = $check->price;
+                $data['Discount']       = $check->discount;
+                $data['TotalPrice']     = ($check->price - $check->discount);
+                $output['response']     = 'success';
+                $output['message']      = 'Order List Data';
+                $output['data']         = $data;
+                $output['error']        = null;
+            }
+        }
+        catch (\Exception $e) {
+            // Log the exception
+            Log::error('ProductList error: ' . $e->getMessage());
+
+            $output = [
+                'response' => 'failed',
+                'message'  => 'An error occurred while fetch order data by customer',
+                'error'    => $e->getMessage(),
+            ];
+        }
+        return response()->json($output);
+    }
+    public function OrderHistory(Request $req){
+        try{
+            $req->validate([
+                'CustomerId'   => 'required',
+            ]);
+            $CId = $req->input('CustomerId');
+
+            $OrderData  = DB::table('orders')
+                        ->where([
+                            'customer_id'    => $CId,
+                            'status'          => 1,
+                        ])
+                        ->select(
+                            'order_id as OrderId',
+                            'customer_id as CustomerId',
+                            'address_id as CustomerAddressId',
+                            'price as Price',
+                            'total as TotalPrice',
+                            'created_at as OrderDate'
+                        )
+                        ->get();
+            if($OrderData){
                 $output['response'] = 'success';
-                $output['message']  = 'Order List Data';
-                $output['data']     = $data;
+                $output['message']  = 'Order history list get successfully';
+                $output['data']     = $OrderData;
+                $output['error']    = null;
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'No data found';
+                $output['data']     = NULL;
                 $output['error']    = null;
             }
         }
@@ -263,6 +314,148 @@ class OrderControllerAPI extends Controller
             $output = [
                 'response' => 'failed',
                 'message'  => 'An error occurred while fetch order data by customer',
+                'error'    => $e->getMessage(),
+            ];
+        }
+        return response()->json($output);
+    }
+    public function OrderHistoryItems(Request $req){
+        try{
+            $req->validate([
+                'OrderId'           => 'required',
+                'CustomerAddressId' => 'required',
+            ]);
+            $OId    = $req->input('OrderId');
+            $CAId   = $req->input('CustomerAddressId');
+            $data   = [];
+            $TotalPrice = 0;
+            $pincode    = DB::table('customer_address as ca')
+                        ->join('pincodes as pd','pd.pincode','ca.zipcode')
+                        ->select(
+                            'pd.state_id as StateId',
+                            'pd.district_id as DistrictId',
+                            'pd.id as PincodeId',
+                            'ca.customer_id as CustomerId',
+                            'ca.address as CAddress',
+                            'ca.city as CCity',
+                            'ca.zipcode as Zipcode'
+                        )
+                        ->where('ca.id',$CAId)
+                        ->first();
+            $OrderData  = DB::table('orders')
+                        ->where('order_id',$OId)
+                        ->value('created_at');
+            $OrderItems = DB::table('add_to_cart as atc')
+                        ->join('products as pro','pro.id','atc.product_id')
+                        ->select(
+                            'pro.id as ProductId',
+                            'pro.item as ProductName',
+                            'pro.photo as ProductPhoto',
+                            'atc.quantity as ProductQuantity',
+                            'pro.units as ProductUnits',
+                            'pro.serial_number  as ProductSerialNumber'
+                        )
+                        ->where([
+                            ['atc.order_id', '=', $OId],
+                            ['atc.deleted_at', '=', NULL]
+                        ])
+                        ->get();
+            $formattedDate = Carbon::parse($OrderData)->format('Y-m-d');
+            if($formattedDate === Carbon::now()->format('Y-m-d')){
+                foreach($OrderItems as $val){
+                    $DalyPrice  = DB::table('daily_price_list')
+                                ->where(
+                                    ['pin_id','=',$pincode->PincodeId],
+                                    ['product_id','=',$val->product_id]
+                                )
+                                ->value('price');
+                    $photo  = $val->ProductPhoto
+                            ? env('APP_URL') . 'storage/Product/' . $val->ProductPhoto
+                            : env('APP_URL') . 'storage/Product/default.png';
+                    $ProductQun     = (float) $val->ProductQuantity;
+                    $DalyPrice      = (float) $DalyPrice;
+                    $data[] = [
+                                'ProductId'         => $val->ProductId,
+                                'ProductName'       => $val->ProductName,
+                                'ProductPhoto'      => $photo,
+                                'ProductQuantity'   => $ProductQun,
+                                'ProductUnits'      => $val->ProductUnits,
+                                'ProductUnitPrice'  => $DalyPrice,
+                                'ProductTotalPrice' => ($ProductQun * $DalyPrice)
+                            ];
+                    $TotalPrice += ($ProductQun * $DalyPrice);
+                }
+            }
+            else{
+                foreach($OrderItems as $val){
+                    $DalyPrice  = DB::table('product_history')
+                                ->where([
+                                    ['serial_number','=',$val->ProductSerialNumber],
+                                    ['zipcode','=',$pincode->Zipcode],
+                                    ['price_date','=',$formattedDate]
+                                ])
+                                ->value('price');
+                    $photo  = $val->ProductPhoto
+                            ? env('APP_URL') . 'storage/Product/' . $val->ProductPhoto
+                            : env('APP_URL') . 'storage/Product/default.png';
+                    $ProductQun     = (float) $val->ProductQuantity;
+                    $DalyPrice      = (float) $DalyPrice;
+                    $data[] = [
+                                'ProductId'         => $val->ProductId,
+                                'ProductName'       => $val->ProductName,
+                                'ProductPhoto'      => $photo,
+                                'ProductQuantity'   => $ProductQun,
+                                'ProductUnits'      => $val->ProductUnits,
+                                'ProductUnitPrice'  => $DalyPrice,
+                                'ProductTotalPrice' => ($ProductQun * $DalyPrice)
+                            ];
+                    $TotalPrice += ($ProductQun * $DalyPrice);
+                }
+            }
+            $data['TotalPrice']         = $TotalPrice;
+            $data['OrderId']            = $OId;
+            $data['CustomerId']         = $pincode->CustomerId;
+            $data['CustomerStateId']    = $pincode->StateId;
+            $data['CustomerDistrictId'] = $pincode->DistrictId;
+            $data['CustomerAddress']    = $pincode->CAddress;
+            $data['CustomerZipcode']    = $pincode->Zipcode;
+        
+            $output['response'] = 'success';
+            $output['message']  = 'Order history list item data get successfully';
+            $output['data']     = $data;
+            $output['error']    = null;
+        
+        }
+        catch (\Exception $e) {
+            // Log the exception
+            Log::error('ProductList error: ' . $e->getMessage());
+
+            $output = [
+                'response' => 'failed',
+                'message'  => 'An error occurred while fetch order data by customer',
+                'error'    => $e->getMessage(),
+            ];
+        }
+        return response()->json($output);
+    }
+    public function ReorderItems(Request $req){
+        try{
+            $req->validate([
+                'OrderId'       => 'required',
+                'CustomerId'    => 'required',
+                'Zipcode'       => 'required',
+            ]);
+            $OId    = $req->input('OrderId');
+            $CId    = $req->input('CustomerId');
+            $Zipcode= $req->input('Zipcode');
+        }
+        catch (\Exception $e) {
+            // Log the exception
+            Log::error('ProductList error: ' . $e->getMessage());
+
+            $output = [
+                'response' => 'failed',
+                'message'  => 'An error occurred while fetch order history items data by customer',
                 'error'    => $e->getMessage(),
             ];
         }
