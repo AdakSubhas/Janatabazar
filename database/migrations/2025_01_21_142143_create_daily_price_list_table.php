@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('pin_id');
             $table->integer('category_id');
             $table->integer('product_id');
-            $table->double('price',8,2);
+            $table->double('purchase_price',8,2)->comment('purchase price')->default(0);
+            $table->double('price',8,2)->comment('Selling Price')->default(0);
             $table->tinyInteger('status')->comment('1="Active",0="Inactive"')->default(1);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();

@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('district',255);
             $table->string('zipcode',255);
             $table->string('serial_number',255);
-            $table->double('price',8,2);
+            $table->double('purchase_price',8,2)->comment('purchase price')->default(0);
+            $table->double('price',8,2)->comment('Selling Price')->default(0);
             $table->string('units',255);
             $table->date('price_date');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
