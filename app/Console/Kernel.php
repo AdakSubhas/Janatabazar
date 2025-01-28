@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('save:daily-price-history')->dailyAt('15:30');
+
     }
 
     /**
@@ -21,7 +23,10 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
+
+    protected $commands = [
+        Commands\SaveDailyPriceToHistory::class,
+    ];
 }
