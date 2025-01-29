@@ -42,6 +42,8 @@ Route::controller(COCAPI::class)->group(function () {
     Route::post('Order-List', 'OrderList');
     Route::post('Order-History-List', 'OrderHistory');
     Route::post('Order-History-List-Items', 'OrderHistoryItems');
+    Route::post('Reorder-Items', 'ReorderItems');
+    Route::post('Cancel-Order', 'OrderStatusUpdate');
 });
 Route::controller(CATCCAPI::class)->group(function () {
     Route::post('Add-To-Cart-List', 'AddToCartList');

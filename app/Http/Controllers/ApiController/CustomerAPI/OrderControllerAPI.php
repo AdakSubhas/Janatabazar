@@ -448,17 +448,165 @@ class OrderControllerAPI extends Controller
             $OId    = $req->input('OrderId');
             $CId    = $req->input('CustomerId');
             $Zipcode= $req->input('Zipcode');
+            $count  = 0;
+            $tprice = 0;
+            $data   = [];
+            $FetchData  = DB::table('add_to_cart as atc')
+                        ->join('customer_address as ca','ca.customer_id','atc.customer_id')
+                        ->join('pincodes as pin','pin.pincode','ca.zipcode')
+                        ->join('daily_price_list as dpl', function ($join) {
+                            $join->on('dpl.pin_id', '=', 'pin.id')
+                                 ->on('dpl.product_id', '=', 'atc.product_id');
+                        })
+                        ->join('products as pro','pro.id','dpl.product_id')
+                        ->select(
+                            'ca.customer_id as CustomerId',
+                            'pin.id as PincodeId',
+                            'dpl.id as DPLId',
+                            'dpl.product_id as ProdactId',
+                            'dpl.price',
+                            'atc.quantity as Quntity',
+                            'pro.photo',
+                            'pro.item'
+                        )
+                        ->where([
+                            ['ca.zipcode','=',$Zipcode],
+                            ['atc.customer_id','=',$CId],
+                            ['atc.order_id','=',$OId],
+                            ['atc.deleted_at','=',NULL]
+                        ])
+                        ->get();
+            if ($FetchData->isNotEmpty()) {
+                foreach($FetchData as $val){
+                    $ExitData   = DB::table('add_to_cart')
+                                ->where([
+                                    ['order_id','=',NULL],
+                                    ['daily_price_id','=',$val->DPLId],
+                                    ['product_id','=',$val->ProdactId],
+                                    ['customer_id','=',$val->CustomerId],
+                                    ['quantity','=',$val->Quntity],
+                                    ['status','=',0],
+                                ])
+                                ->count();
+                    if($ExitData>0){
+                        $count++;
+                        continue;
+                    }
+                    else{
+                        $insert =DB::table('add_to_cart')
+                                ->insertGetId([
+                                    'daily_price_id'    => $val->DPLId,
+                                    'product_id'        => $val->ProdactId,
+                                    'customer_id'       => $val->CustomerId,
+                                    'quantity'          => $val->Quntity,
+                                    'status'            => 0,
+                                    'created_at'        => now()
+                                ]);
+                        $photo = $val->photo
+                                ? env('APP_URL') . 'storage/Product/' . $val->photo
+                                : env('APP_URL') . 'storage/Product/default.jpg';
+                        $data[] = [
+                                    'ID'            => $insert,
+                                    'UserId'        => $val->CustomerId,
+                                    'ProductID'     => $val->ProdactId,
+                                    'ProductName'   => $val->item,
+                                    'ProductImage'  => $photo,
+                                    'ProductPrice'  => $val->price,
+                                    'Quantity'      => $val->Quntity,
+                                ];
+                        $tprice += ($val->price*$val->Quntity);
+                    }
+                }
+                if($count >0){
+                    $output['response'] = 'failed';
+                    $output['message']  = 'Items allready have in cart list';
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response']     = 'success';
+                    $output['message']      = 'Items added in cart list successfully';
+                    $output['data']         = $data;
+                    $output['TotalPrice']   = $tprice;
+                    $output['error']        = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = 'No items found for reorder';
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
         }
         catch (\Exception $e) {
             // Log the exception
-            Log::error('ProductList error: ' . $e->getMessage());
+            Log::error('Reorder error: ' . $e->getMessage());
 
             $output = [
                 'response' => 'failed',
-                'message'  => 'An error occurred while fetch order history items data by customer',
+                'message'  => 'An error occurred while reorder items by customer',
                 'error'    => $e->getMessage(),
             ];
         }
         return response()->json($output);
+    }
+    public function OrderStatusUpdate(Request $req){
+        $req->validate([
+            'OrderID'       => 'required',
+            'CustomerID'    => 'required',
+        ]);
+        $OId    = $req->input('OrderId');
+        $CId    = $req->input('CustomerId');
+
+        $check  = DB::table('orders')
+                ->where([
+                    ['order_id', '=', $OId],
+                    ['customer_id', '=', $CId],
+                    ['status','!=',1],
+                    ['status','!=',2]
+                ])
+                ->count();
+        if($check>0){
+            $cancel = DB::table('orders')
+                    ->where('order_id',$OId)
+                    ->update([
+                        'delete_by_table'   => 'customer',
+                        'deleted_by'        => $CId,
+                        'deleted_at'        => now()
+                    ]);
+            if($cancel){
+                $cancel2    = DB::table('add_to_cart')
+                            ->where('order_id',$OId)
+                            ->update([
+                                'delete_by_table'   => 'customer',
+                                'deleted_by'        => $CId,
+                                'deleted_at'        => now()
+                            ]);
+                if($cancel2){
+                    $output['response'] = 'success';
+                    $output['message']  = "Order cancel successfully";
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+                else{
+                    $output['response'] = 'failed';
+                    $output['message']  = "Order items can not cancel";
+                    $output['data']     = NULL;
+                    $output['error']    = null;
+                }
+            }
+            else{
+                $output['response'] = 'failed';
+                $output['message']  = "Order can not cancel";
+                $output['data']     = NULL;
+                $output['error']    = null;
+            }
+        }
+        else{
+            $output['response'] = 'success';
+            $output['message']  = "Order can not cancel at that stage";
+            $output['data']     = NULL;
+            $output['error']    = null;
+        }
     }
 }

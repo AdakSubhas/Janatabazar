@@ -25,6 +25,7 @@ return new class extends Migration
             $table->double('price', 8, 2)->nullable();
             $table->double('discount', 8, 2)->default(0);
             $table->double('total', 8, 2)->nullable();
+            $table->string('delete_by_table',255)->comment('customer,delivery,store')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
