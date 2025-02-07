@@ -31,6 +31,7 @@ Route::controller(CLCAPI::class)->group(function () {
     Route::post('Customer-Address-List', 'CustomerAddressList');
     Route::post('Customer-Profile-Edit', 'CustomerProfileEdit');
     Route::post('Customer-Password-Change', 'CustomerPasswordChange');
+    Route::post('Customer-Address-Status-Change', 'CustomerAddressStatusChange');
 });
 Route::controller(CPCAPI::class)->group(function () {
     Route::post('Product-List', 'ProductList');
@@ -40,6 +41,7 @@ Route::controller(COCAPI::class)->group(function () {
     Route::post('Shop-And-Delivery-Active', 'ShopAndDeliveryActive');
     Route::post('Add-Order', 'AddOrder');
     Route::post('Order-List', 'OrderList');
+    Route::post('Order-Item-List', 'OrderItemList');
     Route::post('Order-History-List', 'OrderHistory');
     Route::post('Order-History-List-Items', 'OrderHistoryItems');
     Route::post('Reorder-Items', 'ReorderItems');

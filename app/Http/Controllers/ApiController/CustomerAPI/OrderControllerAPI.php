@@ -201,16 +201,75 @@ class OrderControllerAPI extends Controller
     public function OrderList(Request $req){
         try{
             $req->validate([
-                'customer_id' => 'required'
+                'customer_id' => 'required',
             ]);
             $CId    = $req->input('customer_id');
 
             $check  = DB::table('orders')
                     ->where([
                         ['customer_id', '=', $CId],
-                        ['status', '!=', 1]
+                        ['status', '!=', 1],
+                        ['deleted_by','=', NULL]
+                    ])
+                    ->select([
+                        // 'id',
+                        'order_id',
+                        'customer_id',
+                        'address_id',
+                        'total',
+                        'status',
+                        'otp2'
+                    ])
+                    ->get();
+            $output['response'] = 'success';
+            $output['message']  = 'Order list get successfully';
+            $output['data']     = $check;
+            $output['error']    = null;
+        }
+        catch (\Exception $e) {
+            // Log the exception
+            Log::error('ProductList error: ' . $e->getMessage());
+
+            $output = [
+                'response' => 'failed',
+                'message'  => 'An error occurred while fetch order data by customer',
+                'error'    => $e->getMessage(),
+            ];
+        }
+        return response()->json($output);
+
+    }
+    public function OrderItemList(Request $req){
+        try{
+            $req->validate([
+                'customer_id'   => 'required',
+                'order_id'      => 'required',
+                'address_id'    => 'required',
+            ]);
+            $CId    = $req->input('customer_id');
+            $OId    = $req->input('order_id');
+            $AId    = $req->input('address_id');
+
+            $check  = DB::table('orders')
+                    ->where([
+                        ['customer_id', '=', $CId],
+                        ['status', '!=', 1],
+                        ['order_id','=',$OId],
+                        ['address_id','=',$AId],
                     ])
                     ->first();
+            $address    = DB::table('customer_address')
+                        ->where('id',$AId)
+                        ->where('deleted_at',NULL)
+                        ->select(
+                            'customer_id',
+                            'contact_name as customer_name',
+                            'address',
+                            'contact_numbar as ContactNumber',
+                            'city',
+                            'zipcode'
+                        )
+                        ->get();
             $delivery_partner   = DB::table('delivery_partners')
                                 ->where('id',$check->delivery_id)
                                 ->first();
@@ -250,15 +309,17 @@ class OrderControllerAPI extends Controller
                                 'Quantity'      => $val->quantity,
                             ];
                 }
+                $data['OrderStatus']            = $check->status;
                 $data['DeliveryPartnerName']    = $delivery_partner->name;
                 $data['DeliveryPartnerMobile']  = $delivery_partner->mobile;
-                $data['ProductPrice']   = $check->price;
-                $data['Discount']       = $check->discount;
-                $data['TotalPrice']     = ($check->price - $check->discount);
-                $output['response']     = 'success';
-                $output['message']      = 'Order List Data';
-                $output['data']         = $data;
-                $output['error']        = null;
+                $data['ProductPrice']           = $check->price;
+                $data['Discount']               = $check->discount;
+                $data['TotalPrice']             = ($check->price - $check->discount);
+                $data['Customer Address']       = $address;
+                $output['response']             = 'success';
+                $output['message']              = 'Order Items List Data';
+                $output['data']                 = $data;
+                $output['error']                = null;
             }
         }
         catch (\Exception $e) {
